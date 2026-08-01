@@ -1,4 +1,4 @@
-"""Application configuration loaded from environment variables."""
+"""Validated runtime configuration for PackageMind AI."""
 
 from functools import lru_cache
 from pathlib import Path
@@ -9,7 +9,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Validated runtime configuration for SafePkgAI."""
+    """Configuration loaded from environment variables and local defaults."""
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -17,26 +17,22 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_name: str = "SafePkgAI"
+    app_name: str = "PackageMind AI"
     environment: Literal["development", "production", "test"] = "development"
-    database_path: Path = Path("safepkgai.db")
+    database_path: Path = Path("packagemind.db")
 
     request_timeout_seconds: float = Field(default=15.0, gt=0, le=60)
-    # Limit archive size before extraction to reduce resource-exhaustion risk.
-    max_archive_size_bytes: int = Field(
-        default=50 * 1024 * 1024,
-        gt=0,
-        le=200 * 1024 * 1024,
-    )
 
     openai_api_key: str | None = None
     openai_model: str = "gpt-5.6-terra"
+    ai_summary_max_output_tokens: int = Field(default=900, ge=200, le=2_000)
+
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
 
 
 @lru_cache
 def get_settings() -> Settings:
-    """Create and cache the application settings once per process."""
+    """Create and cache application settings for the current process."""
 
     return Settings()
 
