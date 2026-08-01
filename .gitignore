@@ -1,0 +1,17 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Secrets and local configuration
+.env
+
+# Local application data
+*.db
+
+# Test and tooling artifacts
+.pytest_cache/
+.coverage
+
+# Editor settings
+.vscode/
