@@ -28,6 +28,15 @@ class PyPIFetcher(PackageFetcher):
 
     ecosystem = PackageEcosystem.PYPI
 
+    @staticmethod
+    def _get_license_name(license_value: object) -> str | None:
+        """Return a usable PyPI license label when one is published."""
+
+        if isinstance(license_value, str) and license_value.strip():
+            return license_value.strip()
+
+        return None
+
     async def fetch_package(
         self,
         package_name: str,
@@ -71,6 +80,8 @@ class PyPIFetcher(PackageFetcher):
         """Convert a PyPI API payload into a normalized package model."""
 
         info = payload["info"]
+        license_name = self._get_license_name(info.get("license"))
+
         releases = payload.get("releases", {})
         resolved_version = info["version"]
 
@@ -93,6 +104,7 @@ class PyPIFetcher(PackageFetcher):
             description=info.get("description"),
             homepage_url=info.get("home_page"),
             repository_url=self._get_repository_url(info.get("project_urls")),
+            license_name=license_name,
             runtime_requirements=runtime_requirements,
             dependencies=self._parse_dependencies(info.get("requires_dist") or []),
             classifiers=info.get("classifiers") or [],

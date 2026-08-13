@@ -60,4 +60,4 @@ class PackageMetadata(BaseModel):
     dependencies: list[PackageDependency] = Field(default_factory=list)
     classifiers: list[str] = Field(default_factory=list)
     keywords: list[str] = Field(default_factory=list)
-    deprecated_message: str | None = None
+    license_name : str | None = None

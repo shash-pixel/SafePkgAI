@@ -21,6 +21,15 @@ class NpmFetcher(PackageFetcher):
     """Fetch and normalize package metadata from the npm registry."""
 
     ecosystem = PackageEcosystem.NPM
+    
+    @staticmethod
+    def _get_license_name(license_value: object) -> str | None:
+        """Return a usable npm license label when one is published."""
+
+        if isinstance(license_value, str) and license_value.strip():
+            return license_value.strip()
+
+        return None
 
     async def fetch_package(
         self,
@@ -61,6 +70,7 @@ class NpmFetcher(PackageFetcher):
         payload: dict[str, Any],
         package_name: str,
         requested_version: str | None,
+        license_name=self._get_license_name(version_data.get("license")),
     ) -> PackageMetadata:
         """Convert an npm registry payload into a normalized package model."""
 
