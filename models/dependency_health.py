@@ -24,7 +24,7 @@ class DependencyHealthObservation(BaseModel):
     title: str
     description: str
     points_awarded: int = Field(ge=0)
-    points_possible: int = Field(gt=0)
+    points_possible: int = Field(ge=0)
 
 
 class PublicAdvisoryNotice(BaseModel):
