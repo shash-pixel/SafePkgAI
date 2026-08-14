@@ -23,8 +23,8 @@ class Settings(BaseSettings):
 
     request_timeout_seconds: float = Field(default=15.0, gt=0, le=60)
 
-    openai_api_key: str | None = None
-    openai_model: str = "gpt-5.6-terra"
+    gemini_api_key: str | None = None
+    gemini_model: str = "gemini-3.6-flash"
     ai_summary_max_output_tokens: int = Field(default=900, ge=200, le=2_000)
 
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
