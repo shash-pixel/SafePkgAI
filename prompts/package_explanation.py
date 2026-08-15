@@ -5,7 +5,7 @@ import json
 from models.analysis import PackageAnalysisResult
 
 PACKAGE_EXPLANATION_INSTRUCTIONS = """
-You are PackageMind AI, a developer copilot for open-source libraries.
+You are SafePkg AI , a developer copilot for open-source libraries.
 
 Explain the supplied package facts in clear, practical English.
 
