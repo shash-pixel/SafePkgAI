@@ -20,10 +20,44 @@ Do not describe the application as a cybersecurity tool.
 def build_dependency_health_input(
     summary: DependencyHealthSummary,
 ) -> str:
-    """Create a bounded factual JSON input for Gemini."""
+    """Create a small factual input for Gemini."""
 
-    report_data = summary.model_dump(mode="json")
-    report_data["dependency_reports"] = report_data["dependency_reports"][:50]
+    dependencies = []
+
+    for report in summary.dependency_reports:
+        dependencies.append(
+            {
+                "name": report.declared_dependency.name,
+                "health_score": report.health_score,
+                "health_level": report.health_level.value,
+                "data_coverage_percent": report.data_coverage_percent,
+                "observations": [
+                    observation.model_dump(mode="json")
+                    for observation in report.observations
+                ],
+                "public_advisory_notices": [
+                    notice.model_dump(mode="json")
+                    for notice in report.public_advisory_notices
+                ],
+                "version_recommendation": report.version_recommendation,
+                "limitations": report.limitations,
+            }
+        )
+
+    report_data = {
+        "manifest": summary.source_name,
+        "manifest_type": summary.manifest_type.value,
+        "project_name": summary.project_name,
+        "aggregate_health_score": summary.aggregate_health_score,
+        "aggregate_health_level": summary.aggregate_health_level.value,
+        "data_coverage_percent": summary.data_coverage_percent,
+        "dependencies_needing_attention": summary.dependencies_needing_attention,
+        "dependencies_with_updates": summary.dependencies_with_updates,
+        "deprecated_dependencies": summary.deprecated_dependencies,
+        "dependencies_with_public_notices": summary.dependencies_with_public_notices,
+        "dependencies": dependencies,
+        "limitations": summary.limitations,
+    }
 
     return (
         "Explain this Dependency Health Report:\n\n"
