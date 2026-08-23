@@ -70,7 +70,6 @@ class NpmFetcher(PackageFetcher):
         payload: dict[str, Any],
         package_name: str,
         requested_version: str | None,
-        license_name=self._get_license_name(version_data.get("license")),
     ) -> PackageMetadata:
         """Convert an npm registry payload into a normalized package model."""
 

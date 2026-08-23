@@ -61,3 +61,4 @@ class PackageMetadata(BaseModel):
     classifiers: list[str] = Field(default_factory=list)
     keywords: list[str] = Field(default_factory=list)
     license_name : str | None = None
+    deprecated_message: str | None = None

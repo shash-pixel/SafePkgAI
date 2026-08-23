@@ -1,0 +1,9 @@
+{
+  "name": "packagemind-example",
+  "dependencies": {
+    "axios": "1.7.9"
+  },
+  "devDependencies": {
+    "pytest": "1.0.0"
+  }
+}

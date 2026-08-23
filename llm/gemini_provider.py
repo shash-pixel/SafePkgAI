@@ -16,7 +16,7 @@ from llm.provider import (
 OutputModel = TypeVar("OutputModel", bound=BaseModel)
 
 
-class GeminiProvider(StructuredLLMProvider):
+class GeminiStructuredProvider(StructuredLLMProvider):
     """Generate schema-validated outputs with the Google GenAI SDK."""
 
     def __init__(self, client: genai.Client | None = None) -> None:
@@ -44,8 +44,11 @@ class GeminiProvider(StructuredLLMProvider):
                 ),
             )
         except Exception as error:
-            raise LLMGenerationError("Gemini could not generate a response.") from error
-
+            raise LLMGenerationError(f"Gemini could not generate a response: {error}") from error
+        
+        print("GEMINI RESPONSE:")
+        print(response)
+        
         if not response.text:
             raise LLMGenerationError("Gemini returned no text output.")
 
@@ -53,7 +56,7 @@ class GeminiProvider(StructuredLLMProvider):
             return response_model.model_validate_json(response.text)
         except ValidationError as error:
             raise LLMGenerationError(
-                "Gemini returned output that did not match the expected schema."
+                f"Gemini returned output that did not match the expected schema: {error}"
             ) from error
 
     def _get_client(self) -> genai.Client:

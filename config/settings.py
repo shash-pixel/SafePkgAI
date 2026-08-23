@@ -25,7 +25,7 @@ class Settings(BaseSettings):
 
     gemini_api_key: str | None = None
     gemini_model: str = "gemini-3.6-flash"
-    ai_summary_max_output_tokens: int = Field(default=900, ge=200, le=2_000)
+    ai_summary_max_output_tokens: int = Field(default=1500, ge=200, le=2_000)
 
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
 
