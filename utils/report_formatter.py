@@ -2,6 +2,35 @@
 
 from models.dependency_health import DependencyHealthReport
 from models.dependency_health_summary import DependencyHealthSummary
+from models.scan_history import ScanHistoryEntry
+
+def format_scan_history(
+    entries: list[ScanHistoryEntry],
+) -> str:
+    """Return recent Dependency Health Report history for the terminal."""
+
+    if not entries:
+        return "No saved Dependency Health Reports found."
+
+    lines = [
+        "Dependency Health History",
+        "=" * 27,
+    ]
+
+    for entry in entries:
+        score = (
+            f"{entry.aggregate_health_score}/100"
+            if entry.aggregate_health_score is not None
+            else "Unavailable"
+        )
+
+        lines.append(
+            f"#{entry.scan_id} | {entry.source_name} | {score} | "
+            f"{entry.aggregate_health_level.value} | "
+            f"{entry.saved_at.strftime('%Y-%m-%d %H:%M UTC')}"
+        )
+
+    return "\n".join(lines)
 
 
 def format_dependency_health_summary(

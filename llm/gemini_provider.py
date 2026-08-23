@@ -37,17 +37,19 @@ class GeminiStructuredProvider(StructuredLLMProvider):
                 model=settings.gemini_model,
                 contents=input_text,
                 config=types.GenerateContentConfig(
-                    system_instruction=instructions,
-                    max_output_tokens=settings.ai_summary_max_output_tokens,
-                    response_mime_type="application/json",
-                    response_json_schema=response_model.model_json_schema(),
-                ),
+                system_instruction=instructions,
+                max_output_tokens=settings.ai_summary_max_output_tokens,
+                thinking_config=types.ThinkingConfig(
+                thinking_level="minimal"
+          ),
+    response_mime_type="application/json",
+    response_json_schema=response_model.model_json_schema(),
+),
             )
         except Exception as error:
             raise LLMGenerationError(f"Gemini could not generate a response: {error}") from error
         
-        print("GEMINI RESPONSE:")
-        print(response)
+        
         
         if not response.text:
             raise LLMGenerationError("Gemini returned no text output.")
