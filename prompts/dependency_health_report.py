@@ -11,6 +11,13 @@ Explain the supplied Dependency Health Report in practical, clear language.
 Use only the supplied facts. Do not invent package metadata, compatibility
 claims, popularity data, release notes, or upgrade paths.
 
+For recommended_actions, prioritise the most useful next steps. Do not create
+one near-identical action for every dependency. When several packages simply
+have available updates, combine them into one action that names those packages
+and recommends compatibility testing before updating. Keep distinct actions
+only when their supplied facts are meaningfully different (for example,
+deprecation or a public advisory notice).
+
 Public advisory notices are factual, publicly reported package-version notices.
 Do not claim that a package is secure, unsafe, exploitable, or vulnerability-free.
 Do not describe the application as a cybersecurity tool.
