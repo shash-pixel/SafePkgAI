@@ -1,6 +1,26 @@
 [theme]
+base = "light"
 primaryColor = "#000000"
 backgroundColor = "#ffffff"
 secondaryBackgroundColor = "#f6f3f4"
 textColor = "#1b1b1d"
-font = "sans serif"
+borderColor = "#e5e2e3"
+dataframeBorderColor = "#e5e2e3"
+dataframeHeaderBackgroundColor = "#f6f3f4"
+baseRadius = "small"
+buttonRadius = "small"
+showWidgetBorder = true
+showSidebarBorder = true
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+headingFont = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap"
+codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+baseFontSize = 14
+headingFontSizes = ["32px", "24px", "20px", "16px", "14px", "12px"]
+headingFontWeights = [600, 600, 600, 500, 500, 500]
+linkUnderline = false
+
+[theme.sidebar]
+backgroundColor = "#f6f3f4"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#1b1b1d"
+borderColor = "#e5e2e3"

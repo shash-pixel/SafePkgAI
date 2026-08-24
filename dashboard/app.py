@@ -1,9 +1,11 @@
-"""Native Streamlit dashboard for PackageMind AI."""
+"""Native Streamlit dashboard for SafePkg AI."""
 
 import asyncio
 import re
 from collections.abc import Awaitable
+from datetime import datetime, timezone
 from typing import TypeVar
+from zoneinfo import ZoneInfo
 
 import streamlit as st
 
@@ -24,6 +26,7 @@ from models.dependency_health_summary import DependencyHealthSummary
 from models.package import PackageEcosystem
 
 Result = TypeVar("Result")
+INDIA_TIMEZONE = ZoneInfo("Asia/Kolkata")
 
 
 def run_async(awaitable: Awaitable[Result]) -> Result:
@@ -34,6 +37,14 @@ def run_async(awaitable: Awaitable[Result]) -> Result:
 
 def score_text(score: int | None) -> str:
     return f"{score}/100" if score is not None else "Not available"
+
+
+def format_history_time(timestamp: datetime) -> str:
+    """Display UTC history timestamps in India Standard Time."""
+
+    if timestamp.tzinfo is None:
+        timestamp = timestamp.replace(tzinfo=timezone.utc)
+    return timestamp.astimezone(INDIA_TIMEZONE).strftime("%Y-%m-%d %H:%M IST")
 
 
 _UPDATE_ACTION = re.compile(
@@ -76,10 +87,43 @@ def initialize_state() -> None:
             st.session_state[key] = value
 
 
+def open_new_scan() -> None:
+    """Move from the dashboard empty state to the existing scan workflow."""
+
+    st.session_state.page = "New scan"
+
+
+def render_empty_dashboard() -> None:
+    """Give a first-time developer a useful, focused starting point."""
+
+    with st.container(border=True, gap="large"):
+        introduction, overview = st.columns([3, 2], gap="large", vertical_alignment="center")
+        with introduction:
+            st.badge("Ready for analysis", icon=":material/check_circle:", color="gray")
+            st.subheader("Turn a dependency manifest into a clear plan", anchor=False)
+            st.write(
+                "Upload requirements.txt or package.json and SafePkg AI will create "
+                "a practical Dependency Health Report from real package metadata."
+            )
+            st.button(
+                "Create a Dependency Health Report",
+                type="primary",
+                icon=":material/upload_file:",
+                on_click=open_new_scan,
+            )
+        with overview:
+            st.markdown("**Your first report includes**")
+            st.write(":material/update: Version recommendations")
+            st.write(":material/build: Maintenance observations")
+            st.write(":material/gavel: License information")
+            st.write(":material/campaign: Public package notices")
+    st.caption("Reports are saved locally and remain available in Scan history.")
+
+
 def render_report(summary: DependencyHealthSummary) -> None:
     """Render backend facts; no scoring, parsing, or fetching is duplicated here."""
 
-    st.subheader("Dependency Health Report")
+    st.subheader("Dependency Health Report", anchor=False)
     st.caption(
         f"Project / Dependency Health: {summary.source_name}  ·  "
         f"{summary.manifest_type}  ·  {summary.data_coverage_percent}% data coverage"
@@ -107,7 +151,7 @@ def render_report(summary: DependencyHealthSummary) -> None:
             row["Public notices"] = len(report.public_advisory_notices) or "—"
         rows.append(row)
     with st.container(border=True):
-        st.subheader("Dependency overview")
+        st.subheader(":material/table_chart: Dependency overview", anchor=False)
         st.dataframe(
             rows,
             column_config={
@@ -119,7 +163,7 @@ def render_report(summary: DependencyHealthSummary) -> None:
             width="stretch",
         )
 
-    st.subheader("Dependency details")
+    st.subheader(":material/account_tree: Dependency details", anchor=False)
     for report in summary.dependency_reports:
         metadata = report.package_metadata
         with st.expander(
@@ -156,7 +200,7 @@ def render_report(summary: DependencyHealthSummary) -> None:
 
 
 def render_ai_explanation(explanation: DependencyHealthExplanation | None) -> None:
-    st.subheader("AI analysis")
+    st.subheader(":material/auto_awesome: AI analysis", anchor=False)
     if explanation is None:
         message = (
             "AI explanation is currently unavailable. The factual report is complete."
@@ -177,7 +221,7 @@ def render_ai_explanation(explanation: DependencyHealthExplanation | None) -> No
 
 
 def render_new_scan() -> None:
-    st.subheader("New Dependency Health Scan")
+    st.subheader("New Dependency Health Scan", anchor=False)
     st.caption("Upload a file named requirements.txt or package.json.")
     with st.form("manifest_scan_form"):
         uploaded_file = st.file_uploader("Dependency manifest", type=["txt", "json"])
@@ -212,7 +256,7 @@ def render_new_scan() -> None:
 
 
 def render_package_search() -> None:
-    st.subheader("Package Search")
+    st.subheader("Package search", anchor=False)
     with st.form("package_search_form"):
         ecosystem = st.selectbox("Package type", list(PackageEcosystem), format_func=str.upper)
         package_name = st.text_input("Package name", placeholder="requests or httpx")
@@ -247,7 +291,7 @@ def render_package_search() -> None:
 
 
 def render_history() -> None:
-    st.subheader("Scan History")
+    st.subheader("Scan history", anchor=False)
     try:
         entries = list_history()
     except OSError:
@@ -263,7 +307,7 @@ def render_history() -> None:
                 "Source": entry.source_name,
                 "Health Score": entry.aggregate_health_score,
                 "Dependencies": entry.dependency_count,
-                "Saved": entry.saved_at.strftime("%Y-%m-%d %H:%M"),
+                "Saved (IST)": format_history_time(entry.saved_at),
             }
             for entry in entries
         ],
@@ -283,25 +327,33 @@ def render_history() -> None:
 
 
 def main() -> None:
-    st.set_page_config(page_title="PackageMind AI", page_icon=":material/account_tree:", layout="wide")
+    st.set_page_config(page_title="SafePkg AI", page_icon=":material/account_tree:", layout="wide")
     initialize_state()
     with st.sidebar:
-        st.title("PackageMind AI")
-        st.caption("Developer productivity platform")
-        page = st.radio("Navigation", ["Dashboard", "New Scan", "Package Search", "Scan History"])
-        st.divider()
+        st.title(":material/account_tree: SafePkg AI", anchor=False)
+        st.caption("Open-source package workspace")
+        st.space("small")
+        page = st.radio(
+            "Navigation",
+            ["Dashboard", "New scan", "Package search", "Scan history"],
+            key="page",
+            label_visibility="collapsed",
+        )
+        st.space("medium")
+        st.badge("Local scan history", icon=":material/database:", color="gray")
         st.caption("Dependency Health · Package Health")
-    st.title(page)
+    st.title(page, anchor=False)
+    st.caption("Practical package intelligence for your project dependencies")
     if page == "Dashboard":
         summary = st.session_state.health_summary
         if summary is None:
-            st.info("Start a New Scan to create a real Dependency Health Report.")
+            render_empty_dashboard()
         else:
             render_report(summary)
             render_ai_explanation(st.session_state.ai_explanation)
-    elif page == "New Scan":
+    elif page == "New scan":
         render_new_scan()
-    elif page == "Package Search":
+    elif page == "Package search":
         render_package_search()
     else:
         render_history()

@@ -1,4 +1,4 @@
-"""Thin Streamlit adapter over the existing PackageMind AI services."""
+"""Thin Streamlit adapter over the existing SafePkg AI services."""
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
