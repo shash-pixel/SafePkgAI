@@ -26,8 +26,6 @@ from dashboard.backend_adapter import (
     save_summary,
 )
 
-from config.settings import settings
-st.write("Gemini key configured:", bool(settings.gemini_api_key))
 
 from fetchers.base import PackageFetchError
 from llm.dependency_health_explainer import DependencyHealthExplanationService
